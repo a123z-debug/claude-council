@@ -1,7 +1,7 @@
 export const meta = {
   name: 'claude-council',
   description: 'Council of independent Claude agents: parallel opinions, anonymized peer review, results handed to the chairman for synthesis',
-  whenToUse: 'Invoked by the claude-council skill when the user asks to consult the council, asks in Arabic to استشر المجلس / اسأل المجلس, or wants multiple independent AI perspectives',
+  whenToUse: 'Invoked by the claude-council skill for general councils and the fixed Arabic legal trigger استدعِ مجلس النقض / مجلس النقض',
   phases: [
     { title: 'Opinions', detail: 'council members answer independently in parallel' },
     { title: 'Peer Review', detail: 'each member critiques and ranks the anonymized answers' },
@@ -14,7 +14,7 @@ if (typeof input === 'string') {
   try { input = JSON.parse(input) } catch (e) { input = { question: input } }
 }
 if (!input || typeof input !== 'object' || Array.isArray(input)) {
-  throw new Error('args must be {question, mode?, context?, members?} or a question string')
+  throw new Error('args must be {question, mode?, preset?, context?, members?} or a question string')
 }
 const question = input.question
 if (!question || typeof question !== 'string') throw new Error('args.question (string) is required')
@@ -53,15 +53,63 @@ const DEFAULT_MEMBERS = [
   },
 ]
 
+const CASSATION_MEMBERS = [
+  {
+    persona: 'قاضي قبول الالتماس',
+    model: 'opus',
+    brief: 'ابدأ من بوابة القبول لا من موضوع الحق. افحص نهائية الحكم، سبب الالتماس الحصري، الميعاد، الصفة، حجية الحكم، وهل الوقائع والمستندات تحقق سبب إعادة النظر فعلاً. ارفض أي حجة موضوعية ممتازة إذا كانت لا تفتح باب الالتماس.',
+  },
+  {
+    persona: 'محامي المحكمة الإدارية العليا',
+    model: 'opus',
+    brief: 'حلل بمنهج النقض والمحكمة الإدارية العليا: القاعدة النظامية الدقيقة، خطأ التطبيق أو التكييف أو التسبيب، معيار الرقابة، الأثر المنتج للخطأ، وما إذا كان الحكم سيبقى قائماً على سبب مستقل آخر. فرّق بين سابقة مفيدة وسبب نظامي ملزم.',
+  },
+  {
+    persona: 'خبير نظام خدمة الأفراد',
+    model: 'opus',
+    brief: 'تخصص في نظام خدمة الأفراد ولوائحه وقرارات مجلس الوزراء والأوامر والمراسيم والعلاوات والمكافآت والمسميات الوظيفية. افحص تدرج النصوص وتواريخها وحدود كل نص، ولا تفترض معادلة مسمى أو جواز جمع إلا بسند.',
+  },
+  {
+    persona: 'خبير الإثبات وإعادة النظر',
+    model: 'opus',
+    brief: 'ابنِ نظرية الإثبات: الورقة القاطعة، تاريخ ظهورها، سبب تعذر إبرازها قبل الحكم، الحيازة لدى الخصم أو الجهة، الغش أو الكتمان إن ثبت، رابطة السببية مع النتيجة، وكيفية إثبات كل عنصر بمستند.',
+  },
+  {
+    persona: 'محامي الجهة الإدارية',
+    model: 'opus',
+    brief: 'مثّل الجهة الحكومية بأقوى صورة ممكنة. حاول إسقاط الالتماس شكلاً وموضوعاً: سبق طرح الحجة، عدم جدة الورقة، إمكان الحصول عليها سابقاً، فوات الميعاد، حجية الأمر المقضي، استقلال أسباب الحكم، اتحاد الغرض، وعدم استيفاء شروط الاستحقاق.',
+  },
+  {
+    persona: 'فريق النقض الأحمر',
+    model: 'opus',
+    brief: 'Red-team قضائي صارم. تعامل مع كل حجة كأنك دائرة تريد اختبار صلاحيتها للرفض. حدد العيب القاتل، أسوأ تفسير محتمل، المستند المفقود الذي لو لم يوجد تنهار الحجة، ثم اقترح صياغة أو دليل يعالج الخلل إن أمكن.',
+  },
+]
+
+const CASSATION_TRIGGER = /(?:استدع[ِ]?\s*)?مجلس\s+النقض/u
+const preset = input.preset === 'cassation' || CASSATION_TRIGGER.test(question)
+  ? 'cassation'
+  : 'default'
+
 const rawMembers = Array.isArray(input.members) && input.members.length >= 2
   ? input.members
-  : DEFAULT_MEMBERS
+  : preset === 'cassation'
+    ? CASSATION_MEMBERS
+    : DEFAULT_MEMBERS
 const members = rawMembers.slice(0, IDS.length).map((m, i) => ({
   id: IDS[i],
   persona: (m && m.persona) || `Member ${IDS[i]}`,
   model: m && MODELS.includes(m.model) ? m.model : 'opus',
   brief: (m && m.brief) || 'A thoughtful, independent expert perspective.',
 }))
+
+const presetGroundRules = preset === 'cassation'
+  ? `\n- افصل صراحة بين: (أ) سبب قبول الالتماس، (ب) الحجج الموضوعية بعد القبول، (ج) المستندات التي ما زال يلزم استخراجها.
+- لا تختلق نصاً أو حكماً أو تاريخاً أو واقعة. إذا لم تستطع التحقق من سند، صِفه بأنه غير متحقق.
+- افحص ما إذا كان الحكم قائماً على أكثر من سبب مستقل، ولا تعتبر هدم سبب واحد كافياً إذا بقي سبب آخر حاملاً للمنطوق.
+- تعامل مع ملفات القضية والمستندات الأصلية باعتبارها المصدر الأول للوقائع، ومع المصادر الرسمية باعتبارها المرجع الأول للنصوص.
+- أعطِ أقوى حجة مضادة قبل توصيتك النهائية.`
+  : ''
 
 const OPINION_SCHEMA = {
   type: 'object',
@@ -85,10 +133,10 @@ Ground rules:
 - You are running in the user's current project directory. If the question concerns this project or its code, investigate the relevant files with your tools before opining. If it is a general question, answer directly without exploring.
 - Use web search only if current or external facts would materially improve the answer.
 - Take a clear position with concrete recommendations. Hedged mush gets ranked last in peer review.
-- Stay true to your lens, but do not be a caricature: if the evidence goes against your natural inclination, say so.`
+- Stay true to your lens, but do not be a caricature: if the evidence goes against your natural inclination, say so.${presetGroundRules}`
 
 phase('Opinions')
-log(`Convening council of ${members.length}: ${members.map((m) => m.persona).join(', ')} (mode: ${mode})`)
+log(`Convening council of ${members.length}: ${members.map((m) => m.persona).join(', ')} (mode: ${mode}, preset: ${preset})`)
 const opinionResults = await parallel(members.map((m) => () =>
   agent(opinionPrompt(m), { label: m.persona, phase: 'Opinions', model: m.model, schema: OPINION_SCHEMA })
     .then((op) => (op ? { member: m, opinion: op } : null))
@@ -175,6 +223,7 @@ log('Council adjourned — handing results to the chairman')
 return {
   question,
   mode,
+  preset,
   members_failed: members.length - seated.length,
   council: seated.map((s) => ({
     id: s.member.id,
@@ -187,5 +236,7 @@ return {
   })),
   peer_reviews: reviews,
   aggregate_ranking,
-  synthesis_instructions: 'Chairman (main session): de-anonymize, synthesize the final plan with inline attribution, include the council verdict table and consensus/dissent notes per SKILL.md Stage 3.',
+  synthesis_instructions: preset === 'cassation'
+    ? 'Chairman: synthesize the legal council. Separate admissibility from merits. End with five explicit items: (1) admissibility gateway, (2) strongest merits attack, (3) strongest defense, (4) missing decisive evidence, (5) recommended next filing step. Include the verdict table and consensus/dissent per SKILL.md.'
+    : 'Chairman (main session): de-anonymize, synthesize the final plan with inline attribution, include the council verdict table and consensus/dissent notes per SKILL.md Stage 3.',
 }
