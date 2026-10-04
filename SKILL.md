@@ -1,6 +1,6 @@
 ---
 name: claude-council
-description: Multi-perspective AI council powered entirely by parallel Claude subagents on the user's own Claude Code subscription — no external API keys. Spawns independent council members (distinct personas, fresh contexts, smartest spawnable Claude models) who answer in parallel, anonymously peer-review and rank each other's answers, then the main session synthesizes a final plan with attribution. Use when the user explicitly asks to "consult the council", "ask the council", "get perspectives from other AIs/models", or wants multiple independent AI opinions / a second opinion before a plan, design, or decision.
+description: Multi-perspective AI council powered entirely by parallel Claude subagents on the user's own Claude Code subscription — no external API keys. Spawns independent council members (distinct personas, fresh contexts, smartest spawnable Claude models) who answer in parallel, anonymously peer-review and rank each other's answers, then the main session synthesizes a final plan with attribution. Use when the user explicitly asks to "consult the council", "ask the council", "get perspectives from other AIs/models", "استشر المجلس", "اسأل المجلس", "رأي ثاني", or wants multiple independent AI opinions / a second opinion before a plan, design, or decision.
 ---
 
 # Claude Council
@@ -44,7 +44,7 @@ Workflow({
 
 - Pass the user's question **verbatim**; put any framing into `context` instead.
 - If the question concerns the current project, say so in `context` and name the relevant paths — members run in the working directory and will investigate the code before opining (something an external-API council could never do).
-- Use `mode: "quick"` when the user says quick/cheap/fast or the question is small. Use `full` otherwise — the anonymized cross-critique is where most of the value comes from.
+- Use `mode: "quick"` when the user says quick/cheap/fast or the question is small. Arabic triggers such as "استشر المجلس", "اسأل المجلس", "خذ رأي ثاني", and "مجلس خبراء" should invoke this skill as well. Use `full` otherwise — the anonymized cross-critique is where most of the value comes from.
 
 ## Stage 3 — Chairman synthesis (you, after the workflow returns)
 
