@@ -22,7 +22,7 @@ Peer Review · 4 agents
 [karpathy/llm-council](https://github.com/karpathy/llm-council) and [gcpdev/llm-council-skill](https://github.com/gcpdev/llm-council-skill) are great — if you have API keys for multiple vendors. Lots of people just have a Claude Pro/Max subscription and no API keys at all. Claude Council recreates the council experience with what actually makes opinions independent:
 
 - **Fresh contexts** — members can't see your conversation or each other's first drafts, so they can't anchor on each other
-- **Distinct personas** — The Architect, The Skeptic, The Pragmatist, The Researcher (or any custom lineup you ask for)
+- **Distinct personas** — The Architect, The Skeptic, The Pragmatist, The Researcher (or any custom lineup you ask for, up to 24 members)
 - **Anonymized peer review** — answers are judged as "Response A/B/C/D", so nobody defers to a name
 - **Repo awareness** — members run in your working directory and can actually read your code before opining, something an external-API council can never do
 
@@ -53,24 +53,25 @@ Just ask, in any Claude Code session:
 Also triggers on "ask the council …", "get a second opinion on …", Arabic phrases such as "استشر المجلس" and "اسأل المجلس", or invoke directly with `/claude-council`. Useful variants:
 
 - **Quick mode** — "quick council: …" skips peer review (roughly half the tokens).
-- **Custom councils** — "consult a council of security experts about …" and the chairman will seat custom personas (2–8 members).
+- **Custom councils** — "consult a council of security experts about …" and the chairman will seat custom personas (2–24 members).
 - **Project questions** — mention files/paths and members will go read them before opining.
 
 ## مجلس النقض (Legal Cassation Council)
 
-This fork includes a fixed six-seat Saudi administrative-law preset. In Claude Code, say:
+This fork includes a fixed **24-seat Saudi administrative-law cassation preset**. In Claude Code, say:
 
 > **استدعِ مجلس النقض:** راجع الحكم والمرفقات وحدد أقوى سبب نظامي صالح للالتماس.
 
-The skill invokes `preset: "cassation"` and seats six independent Opus agents:
+The skill invokes `preset: "cassation"` and seats **24 independent Opus agents** across six legal workstreams:
 
-1. **قاضي قبول الالتماس** — tests the statutory gateway, finality, deadline, and admissibility before touching the merits.
-2. **محامي المحكمة الإدارية العليا** — analyzes cassation-level legal error, ratio, standard of review, and independent grounds.
-3. **خبير نظام خدمة الأفراد** — focuses on Saudi military-service statutes, implementing rules, allowances, job classifications, and hierarchy of instruments.
-4. **خبير الإثبات وإعادة النظر** — tests decisive documents, inability to produce them earlier, concealment/fraud if proven, and causation.
-5. **محامي الجهة الإدارية** — presents the strongest government-side case for rejection.
-6. **فريق النقض الأحمر** — judicial red-team that tries to break every proposed ground and identifies the missing evidence needed to cure it.
+- **Admissibility & procedure:** قاضي قبول الالتماس، خبير حجية الأحكام، خبير المواعيد والإجراءات، خبير الإثبات وإعادة النظر.
+- **Supreme-court & doctrine:** محامي المحكمة الإدارية العليا، باحث أحكام الإدارية العليا والمبادئ، خبير تدرج القواعد، خبير تفسير النصوص.
+- **Military-service merits:** خبير نظام خدمة الأفراد، خبير المسميات والتصنيف العسكري، خبير العلاوات والبدلات والمكافآت، خبير الملاك والوصف الوظيفي، خبير الشؤون المالية.
+- **Evidence & documents:** خبير السجلات والمحررات الحكومية، خبير المستندات القاطعة والتعذر، خبير الغش والتدليس، خبير السببية والأثر المنتج.
+- **Judgment analysis & drafting:** خبير تسبيب الأحكام، خبير المقارنة بين الأحكام، خبير صياغة اللوائح، استراتيجي الدعوى والبدائل.
+- **Adversarial control:** محامي الجهة الإدارية، فريق النقض الأحمر، مدقق الاستشهادات ومنع الهلوسة.
 
+All 24 produce isolated first-pass opinions. In full mode, an **8-seat appellate review board** (A, B, E, F, G, Q, T, X) receives the anonymized packet, critiques and ranks the 24 responses, then the chairman synthesizes the final legal plan. This preserves broad expert coverage without the extreme token cost of a 24×24 review matrix.
 The preset has mandatory safeguards: it separates **admissibility** from **merits**, forbids invented statutes/cases/facts, checks whether another independent ground still sustains the judgment, and forces the chairman to finish with the admissibility gateway, strongest attack, strongest defense, missing decisive evidence, and next filing step.
 
 ## Example (real run)
