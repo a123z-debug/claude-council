@@ -56,6 +56,23 @@ Also triggers on "ask the council …", "get a second opinion on …", Arabic ph
 - **Custom councils** — "consult a council of security experts about …" and the chairman will seat custom personas (2–8 members).
 - **Project questions** — mention files/paths and members will go read them before opining.
 
+## مجلس النقض (Legal Cassation Council)
+
+This fork includes a fixed six-seat Saudi administrative-law preset. In Claude Code, say:
+
+> **استدعِ مجلس النقض:** راجع الحكم والمرفقات وحدد أقوى سبب نظامي صالح للالتماس.
+
+The skill invokes `preset: "cassation"` and seats six independent Opus agents:
+
+1. **قاضي قبول الالتماس** — tests the statutory gateway, finality, deadline, and admissibility before touching the merits.
+2. **محامي المحكمة الإدارية العليا** — analyzes cassation-level legal error, ratio, standard of review, and independent grounds.
+3. **خبير نظام خدمة الأفراد** — focuses on Saudi military-service statutes, implementing rules, allowances, job classifications, and hierarchy of instruments.
+4. **خبير الإثبات وإعادة النظر** — tests decisive documents, inability to produce them earlier, concealment/fraud if proven, and causation.
+5. **محامي الجهة الإدارية** — presents the strongest government-side case for rejection.
+6. **فريق النقض الأحمر** — judicial red-team that tries to break every proposed ground and identifies the missing evidence needed to cure it.
+
+The preset has mandatory safeguards: it separates **admissibility** from **merits**, forbids invented statutes/cases/facts, checks whether another independent ground still sustains the judgment, and forces the chairman to finish with the admissibility gateway, strongest attack, strongest defense, missing decisive evidence, and next filing step.
+
 ## Example (real run)
 
 Question: *"For a solo NLP research project with a ~7-week deadline, should experiment configurations live in YAML config files or as plain Python dicts in the code?"*
