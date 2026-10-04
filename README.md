@@ -39,7 +39,7 @@ Honest caveat: all members are Claude, so you get independence from isolation an
 User-wide (available in every project):
 
 ```sh
-git clone https://github.com/amgadelgamal/claude-council ~/.claude/skills/claude-council
+git clone https://github.com/a123z-debug/claude-council ~/.claude/skills/claude-council
 ```
 
 Or per-project: clone into `<project>/.claude/skills/claude-council`. Claude Code picks up skills automatically (start a new session if it doesn't appear).
@@ -50,7 +50,7 @@ Just ask, in any Claude Code session:
 
 > consult the council: should we migrate this service to async now or after the launch?
 
-Also triggers on "ask the council …", "get a second opinion on …", or invoke directly with `/claude-council`. Useful variants:
+Also triggers on "ask the council …", "get a second opinion on …", Arabic phrases such as "استشر المجلس" and "اسأل المجلس", or invoke directly with `/claude-council`. Useful variants:
 
 - **Quick mode** — "quick council: …" skips peer review (roughly half the tokens).
 - **Custom councils** — "consult a council of security experts about …" and the chairman will seat custom personas (2–8 members).
