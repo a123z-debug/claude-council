@@ -26,17 +26,36 @@ Convene a council of **independent Claude subagents** to debate the user's quest
 
 When the user says **"استدعِ مجلس النقض"**, **"استدع مجلس النقض"**, or clearly asks for **مجلس النقض**, invoke the workflow with `preset: "cassation"` and keep the user's actual legal question verbatim in `question`.
 
-The preset always seats these six independent members:
+The preset always seats **24 independent legal specialists**:
 
 | ID | Persona | Model | Legal lens |
 |----|---------|-------|------------|
-| A | قاضي قبول الالتماس | Opus 4.8 | Admissibility first: finality, statutory gateway, deadline, standing, and whether the alleged ground truly opens reconsideration |
-| B | محامي المحكمة الإدارية العليا | Opus 4.8 | Cassation-level legal error: exact rule, ratio, standard of review, and whether the challenged reasoning can actually be displaced |
-| C | خبير نظام خدمة الأفراد | Opus 4.8 | Saudi military-service rules, implementing regulations, allowances, job classifications, and hierarchy of legal instruments |
-| D | خبير الإثبات وإعادة النظر | Opus 4.8 | Decisive documents, fraud/concealment, inability to produce evidence earlier, causation, and proof architecture |
-| E | محامي الجهة الإدارية | Opus 4.8 | Strongest defense for the government/agency; res judicata, independent grounds, statutory bars, evidentiary attacks, and harmless-error arguments |
-| F | فريق النقض الأحمر | Opus 4.8 | Judicial red-team: tries to reject every proposed ground, identifies fatal defects, and states what evidence would cure them |
+| A | قاضي قبول الالتماس | Opus 4.8 | بوابة القبول والنهائية والميعاد |
+| B | محامي المحكمة الإدارية العليا | Opus 4.8 | منهج النقض والخطأ القانوني المنتج |
+| C | خبير نظام خدمة الأفراد | Opus 4.8 | الأنظمة العسكرية والعلاوات |
+| D | خبير الإثبات وإعادة النظر | Opus 4.8 | بناء سبب الالتماس وإثباته |
+| E | محامي الجهة الإدارية | Opus 4.8 | أقوى دفاع حكومي مضاد |
+| F | فريق النقض الأحمر | Opus 4.8 | اختبار الرفض والعيوب القاتلة |
+| G | باحث أحكام الإدارية العليا والمبادئ | Opus 4.8 | السوابق والمبادئ واتجاه القضاء |
+| H | خبير حجية الأحكام والأمر المقضي | Opus 4.8 | نطاق الحجية والأسباب المستقلة |
+| I | خبير المواعيد والإجراءات | Opus 4.8 | الاختصاص والآجال والمتطلبات الشكلية |
+| J | خبير تدرج القواعد والنسخ والتعارض | Opus 4.8 | ترتيب النصوص والنسخ والتخصيص |
+| K | خبير تفسير النصوص والقرارات | Opus 4.8 | الدلالة والشروط والاستثناءات |
+| L | خبير المسميات والتصنيف الوظيفي العسكري | Opus 4.8 | اعتماد المسميات والمعادلات الوظيفية |
+| M | خبير العلاوات والبدلات والمكافآت | Opus 4.8 | اتحاد الغرض والجمع وسبب الصرف |
+| N | خبير الوصف الوظيفي والتشكيلات والملاك | Opus 4.8 | الملاك والقسم والوظيفة الفعلية |
+| O | خبير الشؤون المالية والرواتب والسقوف | Opus 4.8 | النسب والوعاء والسقوف والاستثناءات |
+| P | خبير السجلات والمحررات الحكومية | Opus 4.8 | طلب المستندات والحيازة والإفصاح |
+| Q | خبير المستندات القاطعة والتعذر | Opus 4.8 | جدة الورقة وقطعيتها وتعذر تقديمها |
+| R | خبير الغش والتدليس والكتمان | Opus 4.8 | شروط الغش وأثره وتاريخ ظهوره |
+| S | خبير السببية والأثر المنتج | Opus 4.8 | هل الخطأ يغير النتيجة فعلاً |
+| T | خبير تسبيب الأحكام والقصور والتناقض | Opus 4.8 | تفكيك أسباب الحكم سطراً بسطر |
+| U | خبير المقارنة والتمييز بين الأحكام | Opus 4.8 | التطابق والاختلاف في مناط السوابق |
+| V | خبير صياغة اللوائح والطلبات | Opus 4.8 | تحويل الحجة إلى صحيفة محكمة |
+| W | استراتيجي الدعوى والبدائل الإجرائية | Opus 4.8 | الالتماس مقابل البدائل والمسار الأمثل |
+| X | مدقق الاستشهادات ومنع الهلوسة | Opus 4.8 | تحقق كل مادة وقرار وتاريخ ومصدر |
 
+في الوضع الكامل، **الأعضاء الـ24 يقدّمون آراء مستقلة**. ولمنع انفجار التكلفة والسياق الناتج عن مراجعة 24×24، تقوم هيئة مراجعة نهائية من **8 مقاعد** (A, B, E, F, G, Q, T, X) بمراجعة جميع الإجابات مجهولة الهوية وترتيبها، ثم يقوم الرئيس بتوليف النتيجة.
 ### Mandatory cassation rules
 
 - **Separate admissibility from merits.** A strong merits argument is not itself a valid reconsideration gateway.
@@ -60,7 +79,7 @@ Workflow({
     mode: "full",            // "full" (default) = with peer review; "quick" = opinions → synthesis only
     preset: "cassation",       // optional named preset; use for "مجلس النقض"
     context: "<optional: 1–3 sentences of relevant conversation/project context, including repo paths worth investigating>",
-    members: [               // optional override (2–8 members) when the user wants a custom council,
+    members: [               // optional override (2–24 members) when the user wants a custom council,
       { persona: "...", brief: "...", model: "opus" }   // e.g. "a council of security experts";
     ]                        // model ∈ fable | opus | sonnet | haiku (invalid/missing → opus)
   }
@@ -73,7 +92,7 @@ Workflow({
 
 ## Stage 3 — Chairman synthesis (you, after the workflow returns)
 
-The workflow returns `{ question, mode, council[], peer_reviews[], aggregate_ranking[] }` where each council entry has `{ id, persona, model, stance, confidence, key_points, answer }` and `aggregate_ranking` gives each member's average peer rank (lower = better). Your final message must contain:
+The workflow returns `{ question, mode, preset, council[], peer_reviews[], aggregate_ranking[] }` where each council entry has `{ id, persona, model, stance, confidence, key_points, answer }` and `aggregate_ranking` gives each member's average peer rank (lower = better). Your final message must contain:
 
 1. **The synthesized plan/answer** — integrate the strongest ideas across members; attribute inline ("The Skeptic flagged…", "The Researcher found…"). Where members disagreed, say how you resolved it and why. Apply your own judgment — you may overrule the council's ranking, but say so explicitly.
 2. **Council verdict table** — `Member (model) | Stance | Avg peer rank`.
