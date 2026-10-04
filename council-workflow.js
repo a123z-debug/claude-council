@@ -1,7 +1,7 @@
 export const meta = {
   name: 'claude-council',
   description: 'Council of independent Claude agents: parallel opinions, anonymized peer review, results handed to the chairman for synthesis',
-  whenToUse: 'Invoked by the llm-council skill when the user asks to consult the council or wants multiple independent AI perspectives',
+  whenToUse: 'Invoked by the claude-council skill when the user asks to consult the council, asks in Arabic to استشر المجلس / اسأل المجلس, or wants multiple independent AI perspectives',
   phases: [
     { title: 'Opinions', detail: 'council members answer independently in parallel' },
     { title: 'Peer Review', detail: 'each member critiques and ranks the anonymized answers' },
