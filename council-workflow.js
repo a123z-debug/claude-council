@@ -23,7 +23,7 @@ const extraContext = input.context
   ? `\n\nADDITIONAL CONTEXT (from the user's session):\n${input.context}`
   : ''
 
-const IDS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+const IDS = 'ABCDEFGHIJKLMNOPQRSTUVWX'.split('')
 const MODELS = ['fable', 'opus', 'sonnet', 'haiku']
 
 // NOTE (verified 2026-06-11): subagents cannot run Fable 5 — model:'fable' silently
@@ -57,34 +57,126 @@ const CASSATION_MEMBERS = [
   {
     persona: 'قاضي قبول الالتماس',
     model: 'opus',
-    brief: 'ابدأ من بوابة القبول لا من موضوع الحق. افحص نهائية الحكم، سبب الالتماس الحصري، الميعاد، الصفة، حجية الحكم، وهل الوقائع والمستندات تحقق سبب إعادة النظر فعلاً. ارفض أي حجة موضوعية ممتازة إذا كانت لا تفتح باب الالتماس.',
+    brief: 'ابدأ من بوابة القبول قبل موضوع الحق. افحص نهائية الحكم، سبب الالتماس الحصري، الميعاد، الصفة، حجية الحكم، وهل الوقائع والمستندات تحقق سبب إعادة النظر فعلاً. ارفض أي حجة موضوعية ممتازة إذا كانت لا تفتح باب الالتماس.',
   },
   {
     persona: 'محامي المحكمة الإدارية العليا',
     model: 'opus',
-    brief: 'حلل بمنهج النقض والمحكمة الإدارية العليا: القاعدة النظامية الدقيقة، خطأ التطبيق أو التكييف أو التسبيب، معيار الرقابة، الأثر المنتج للخطأ، وما إذا كان الحكم سيبقى قائماً على سبب مستقل آخر. فرّق بين سابقة مفيدة وسبب نظامي ملزم.',
+    brief: 'حلل بمنهج المحكمة الإدارية العليا والنقض: القاعدة النظامية الدقيقة، خطأ التطبيق أو التكييف أو التسبيب، معيار الرقابة، الأثر المنتج للخطأ، وهل يبقى الحكم قائماً على سبب مستقل آخر.',
   },
   {
     persona: 'خبير نظام خدمة الأفراد',
     model: 'opus',
-    brief: 'تخصص في نظام خدمة الأفراد ولوائحه وقرارات مجلس الوزراء والأوامر والمراسيم والعلاوات والمكافآت والمسميات الوظيفية. افحص تدرج النصوص وتواريخها وحدود كل نص، ولا تفترض معادلة مسمى أو جواز جمع إلا بسند.',
+    brief: 'تخصص في نظام خدمة الأفراد ولوائحه وقرارات مجلس الوزراء والأوامر والمراسيم والعلاوات والمكافآت. اضبط المادة ورقم القرار والتاريخ وحدود كل نص ولا تفترض جواز الجمع أو المنع دون سند.',
   },
   {
     persona: 'خبير الإثبات وإعادة النظر',
     model: 'opus',
-    brief: 'ابنِ نظرية الإثبات: الورقة القاطعة، تاريخ ظهورها، سبب تعذر إبرازها قبل الحكم، الحيازة لدى الخصم أو الجهة، الغش أو الكتمان إن ثبت، رابطة السببية مع النتيجة، وكيفية إثبات كل عنصر بمستند.',
+    brief: 'ابنِ نظرية الإثبات: الورقة القاطعة، تاريخ ظهورها، سبب تعذر إبرازها قبل الحكم، الحيازة لدى الخصم، رابطة السببية مع النتيجة، وكيفية إثبات كل عنصر بمحرر أو قرينة نظامية.',
   },
   {
     persona: 'محامي الجهة الإدارية',
     model: 'opus',
-    brief: 'مثّل الجهة الحكومية بأقوى صورة ممكنة. حاول إسقاط الالتماس شكلاً وموضوعاً: سبق طرح الحجة، عدم جدة الورقة، إمكان الحصول عليها سابقاً، فوات الميعاد، حجية الأمر المقضي، استقلال أسباب الحكم، اتحاد الغرض، وعدم استيفاء شروط الاستحقاق.',
+    brief: 'مثّل الجهة الحكومية بأقوى صورة ممكنة. حاول إسقاط الالتماس شكلاً وموضوعاً: سبق طرح الحجة، عدم جدة الورقة، إمكان الحصول عليها سابقاً، فوات الميعاد، حجية الأمر المقضي، استقلال أسباب الحكم، وعدم استيفاء شروط الاستحقاق.',
   },
   {
     persona: 'فريق النقض الأحمر',
     model: 'opus',
-    brief: 'Red-team قضائي صارم. تعامل مع كل حجة كأنك دائرة تريد اختبار صلاحيتها للرفض. حدد العيب القاتل، أسوأ تفسير محتمل، المستند المفقود الذي لو لم يوجد تنهار الحجة، ثم اقترح صياغة أو دليل يعالج الخلل إن أمكن.',
+    brief: 'Red-team قضائي صارم. اختبر كل حجة كما لو كنت دائرة تريد رفضها. حدد العيب القاتل، أسوأ تفسير محتمل، المستند المفقود الذي تنهار الحجة بدونه، ثم اقترح علاجاً إن أمكن.',
+  },
+  {
+    persona: 'باحث أحكام الإدارية العليا والمبادئ',
+    model: 'opus',
+    brief: 'ابحث عن أحكام المحكمة الإدارية العليا والمبادئ القضائية والاتجاهات ذات الصلة. ميّز بين الحكم الملزم أو المبدأ المنشور وبين مجرد حكم مشابه، وحدد وجه التطابق والاختلاف بدقة.',
+  },
+  {
+    persona: 'خبير حجية الأحكام والأمر المقضي',
+    model: 'opus',
+    brief: 'افحص نطاق الحجية: الخصوم، المحل، السبب، الفترات الزمنية، الأسباب المستقلة، وما إذا كانت المطالبة أو المستند الجديد يصطدم بحجية حكم نهائي أو يقع خارج نطاقها.',
+  },
+  {
+    persona: 'خبير المواعيد والإجراءات أمام ديوان المظالم',
+    model: 'opus',
+    brief: 'راجع المواعيد، التبليغ، بدء الأجل، الاختصاص، المحكمة المختصة، متطلبات الصحيفة، التظلم السابق عند لزومه، وآثار أي خطأ إجرائي على قبول الالتماس أو الدعوى.',
+  },
+  {
+    persona: 'خبير تدرج القواعد والنسخ والتعارض',
+    model: 'opus',
+    brief: 'رتب المرسوم والنظام واللائحة وقرار مجلس الوزراء والأمر السامي والقرارات التنفيذية زمنياً وموضوعياً. اختبر النسخ والتعديل والتخصيص والتعارض ولا تقبل استدلالاً بنص منسوخ أو خارج محله.',
+  },
+  {
+    persona: 'خبير تفسير النصوص والقرارات التنظيمية',
+    model: 'opus',
+    brief: 'حلل دلالة الألفاظ والاستثناءات والشروط والقيود والإحالات والبنود الفرعية. فرّق بين النص المنشئ للاستحقاق، النص المحدد للسقف، والنص المانع من الجمع.',
+  },
+  {
+    persona: 'خبير المسميات والتصنيف الوظيفي العسكري',
+    model: 'opus',
+    brief: 'افحص المسمى الوظيفي والتخصص والرمز والتصنيف والمعادلة بين المسميات العسكرية. لا تعتبر تشابه المهام بديلاً عن قرار اعتماد أو تصنيف إذا كان النص يشترط مسمى معتمداً.',
+  },
+  {
+    persona: 'خبير العلاوات والبدلات والمكافآت العسكرية',
+    model: 'opus',
+    brief: 'حدد سبب كل ميزة مالية ووعاءها وشروطها والغرض الذي صرفت من أجله. اختبر اتحاد الغرض، الجواز أو المنع من الجمع، والفارق بين العلاوة والبدل والمكافأة في الحالة المحددة.',
+  },
+  {
+    persona: 'خبير الوصف الوظيفي والتشكيلات والملاك',
+    model: 'opus',
+    brief: 'افحص الملاك والتشكيل التنظيمي وبطاقة الوصف وموقع الوظيفة الفعلي والقسم المعتمد. ميّز بين المثبت عليه الفرد ومكان تكليفه أو ممارسته، وحدد أثر ذلك على شروط الاستحقاق.',
+  },
+  {
+    persona: 'خبير الشؤون المالية والرواتب والسقوف',
+    model: 'opus',
+    brief: 'دقق نسب البدلات والعلاوات والمكافآت ووعاء الاحتساب والسقف والاستثناءات والفترات. ارفض أي حسبة غير موثقة أو خلط بين أصل الاستحقاق وحد الصرف.',
+  },
+  {
+    persona: 'خبير السجلات والمحررات الحكومية والإفصاح',
+    model: 'opus',
+    brief: 'حدد السجل أو الملف أو الجهة الحافظة للمستند المفقود، وكيفية طلبه وإثبات تعذر الوصول إليه، وما إذا كان تحت يد الخصم أو جهة عامة، مع مراعاة المستندات المصنفة أو السرية.',
+  },
+  {
+    persona: 'خبير المستندات القاطعة والتعذر عن التقديم',
+    model: 'opus',
+    brief: 'اختبر هل الورقة جديدة حقاً، قاطعة حقاً، سابقة في وجودها للحكم أو لاحقة، وهل تعذر تقديمها قبل الحكم لسبب يمكن إثباته. ضع اختباراً ثنائياً: هل تغيّر سبباً مستقلاً؟ وهل تفتح باب الالتماس؟',
+  },
+  {
+    persona: 'خبير الغش والتدليس والكتمان الإجرائي',
+    model: 'opus',
+    brief: 'لا يفترض الغش. يبحث عن فعل أو امتناع محدد من الخصم، علمه بالحقيقة، أثره في تكوين عقيدة المحكمة، وتوقيت اكتشافه. يرفض تحويل مجرد عدم تقديم مستند إلى تدليس بلا دليل.',
+  },
+  {
+    persona: 'خبير السببية والأثر المنتج في الحكم',
+    model: 'opus',
+    brief: 'يسأل: لو صح هذا الخطأ أو ظهر هذا المستند، هل تتغير النتيجة فعلاً؟ افصل بين الخطأ غير المنتج والخطأ الذي يهدم ركناً ضرورياً، وافحص بقاء أسباب أخرى مستقلة للحكم.',
+  },
+  {
+    persona: 'خبير تسبيب الأحكام والقصور والتناقض',
+    model: 'opus',
+    brief: 'يفكك أسباب الحكم سطراً بسطر: ما الوقائع التي ثبتت، ما الدفوع التي أجيب عنها أو أهملت، أين القصور أو التناقض أو فساد الاستدلال، وهل ذلك يصلح لسبب الالتماس أو فقط للطعن العادي.',
+  },
+  {
+    persona: 'خبير المقارنة والتمييز بين الأحكام',
+    model: 'opus',
+    brief: 'يقارن الأحكام المقترحة من حيث الوقائع والمسمى والوظيفة والعلاوة والفترة والنص المطبق ودرجة المحكمة والمنطوق. يمنع الاستناد إلى سابقة تختلف في مناطها الجوهري.',
+  },
+  {
+    persona: 'خبير صياغة اللوائح والطلبات القضائية',
+    model: 'opus',
+    brief: 'يحوّل الحجة المقبولة إلى صحيفة منضبطة: بيانات، وقائع، سبب الالتماس، المستندات، الأثر المنتج، والطلبات. يحذف المبالغات والعبارات التي تفتح دفوعاً مجانية للخصم.',
+  },
+  {
+    persona: 'استراتيجي الدعوى والبدائل الإجرائية',
+    model: 'opus',
+    brief: 'يقارن بين الالتماس ودعوى حقوق لاحقة أو تظلم جديد أو طلب مستندات أو مسار آخر. يحدد ما يجب فعله أولاً وما لا ينبغي رفعه قبل اكتمال الدليل.',
+  },
+  {
+    persona: 'مدقق الاستشهادات ومنع الهلوسة',
+    model: 'opus',
+    brief: 'يراجع كل رقم مادة وقرار وتاريخ واقتباس واسم حكم ومصدر. يضع علامة UNVERIFIED على أي سند غير مثبت، ويمنع بناء النتيجة على معلومة غير موثقة أو منقولة على نحو غير دقيق.',
   },
 ]
+
+const CASSATION_REVIEW_BOARD_IDS = new Set(['A', 'B', 'E', 'F', 'G', 'Q', 'T', 'X'])
 
 const CASSATION_TRIGGER = /(?:استدع[ِ]?\s*)?مجلس\s+النقض/u
 const preset = input.preset === 'cassation' || CASSATION_TRIGGER.test(question)
@@ -115,7 +207,7 @@ const OPINION_SCHEMA = {
   type: 'object',
   properties: {
     stance: { type: 'string', description: 'Your position in one sentence' },
-    answer: { type: 'string', description: 'Your full answer/recommendation in markdown, under ~600 words' },
+    answer: { type: 'string', description: preset === 'cassation' ? 'Your focused legal analysis in markdown, under ~450 words' : 'Your full answer/recommendation in markdown, under ~600 words' },
     key_points: { type: 'array', items: { type: 'string' }, description: 'The 3-6 most important points' },
     confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
   },
@@ -183,9 +275,14 @@ Below are the ${seated.length} anonymized answers from the council. One of them 
 
 ${packet}
 
-For EACH response, give its main strengths and weaknesses. Then rank ALL responses from best to worst by: correctness, insight density, actionability, and how well it answers the actual question (not how well it matches your own style). Use response_id values exactly from: ${validIds.join(', ')}. Judge only what is written — do not explore the filesystem or web.`
+For EACH response, give concise strengths and weaknesses. Then rank ALL responses from best to worst by: correctness, legal support, insight density, actionability, and how well it answers the actual question (not how well it matches your own style). Use response_id values exactly from: ${validIds.join(', ')}. Judge only what is written — do not explore the filesystem or web.`
 
-  const reviewResults = await parallel(seated.map((s) => () =>
+  const reviewPanel = preset === 'cassation'
+    ? seated.filter((s) => CASSATION_REVIEW_BOARD_IDS.has(s.member.id))
+    : seated
+
+  log(`Peer review board: ${reviewPanel.length} reviewer(s) evaluating ${seated.length} independent opinions`)
+  const reviewResults = await parallel(reviewPanel.map((s) => () =>
     agent(reviewPrompt(s.member), { label: `review by ${s.member.persona}`, phase: 'Peer Review', model: s.member.model, schema: REVIEW_SCHEMA })
       .then((rv) => (rv ? { reviewer: s.member.persona, reviewer_id: s.member.id, review: rv } : null))
   ))
@@ -225,6 +322,7 @@ return {
   mode,
   preset,
   members_failed: members.length - seated.length,
+  review_board_size: reviews.length,
   council: seated.map((s) => ({
     id: s.member.id,
     persona: s.member.persona,
@@ -237,6 +335,6 @@ return {
   peer_reviews: reviews,
   aggregate_ranking,
   synthesis_instructions: preset === 'cassation'
-    ? 'Chairman: synthesize the legal council. Separate admissibility from merits. End with five explicit items: (1) admissibility gateway, (2) strongest merits attack, (3) strongest defense, (4) missing decisive evidence, (5) recommended next filing step. Include the verdict table and consensus/dissent per SKILL.md.'
+    ? 'Chairman: synthesize all 24 independent legal opinions plus the specialist review board. Separate admissibility from merits. Group findings by procedure, merits, evidence, opposition, and strategy. End with five explicit items: (1) admissibility gateway, (2) strongest merits attack, (3) strongest defense, (4) missing decisive evidence, (5) recommended next filing step. Include the verdict table and consensus/dissent per SKILL.md.'
     : 'Chairman (main session): de-anonymize, synthesize the final plan with inline attribution, include the council verdict table and consensus/dissent notes per SKILL.md Stage 3.',
 }
